@@ -50,52 +50,70 @@ async function run() {
     });
 
     // --- Add skill --
-    app.post("/skills" , async (req , res) =>{
-        const data = req.body
-        data.create_at = new Date()
-        try{
-            const result = await skillCollection.insertOne(data);
-            res.send(result)
-        }catch(error){
-            console.error(error);
-            res.status(500).send({error: "Failed to add artwork"})
-        }
-    })
+    app.post("/skills", async (req, res) => {
+      const data = req.body;
+      data.create_at = new Date();
+      try {
+        const result = await skillCollection.insertOne(data);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to add artwork" });
+      }
+    });
 
     //  my couses --------
 
-    app.get("/my-couses", async (req , res) =>{
-        const email = req.query.email;
-        try{
-            const result = await skillCollection.find({userEmail: email}).toArray();
-            res.send(result)
-        }catch(error) {
-            console.error(error)
-            res.status(500).send({ error: "Failed to load user's couses"})
-        }
-    })
+    app.get("/my-couses", async (req, res) => {
+      const email = req.query.email;
+      try {
+        const result = await skillCollection
+          .find({ userEmail: email })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to load user's couses" });
+      }
+    });
 
     // --- Update skill ---
 
-    app.post('/skills/:id' , async (req , res) =>{
-        const id = req.params;
-        const data = req.body;
+    app.post("/skills/:id", async (req, res) => {
+      const id = req.params;
+      const data = req.body;
 
+      try {
+        const result = await skillCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: data }
+        );
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to update skill" });
+      }
+    });
+
+    // letest 8 skills
+    app.get("/skills" , async (req , res ) =>{
         try{
-            const result = await skillCollection.updateOne(
-                {_id:new ObjectId(id)},
-                {$set:data},
-            )
-            res.send(result)
-        }catch(error){
-            console.error(error);
-            res.status(500).send({error: "Failed to update artwork" })
-        }
+            const result = await skillCollection.find({})
+            .sort({create_at: -1})
+            .limit(8)
+            .toArray()
+            res.send(result);
 
+        }catch(error){
+            console.error(error)
+            res.status(500).send({error: "Failed to fetch latest skill"})
+        }
     })
 
-
-
+   
+    
+    
+    
     await client.db("admin").command({ ping: 1 });
     console.log("Connected to MongoDB successfully!");
   } finally {
