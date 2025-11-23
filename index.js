@@ -1,7 +1,7 @@
-const express = require('express')
+const express = require("express");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const app = express()
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware for body parsing
@@ -14,18 +14,18 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
   try {
     await client.connect();
 
-    const db = client.db('education_db');
-    const skillCollection = db.collection('skills')
+    const db = client.db("education_db");
+    const skillCollection = db.collection("skills");
 
     // GET all skills
-    app.get('/skills', async (req, res) => {
+    app.get("/skills", async (req, res) => {
       try {
         const result = await skillCollection.find({}).toArray();
         res.send(result);
@@ -35,13 +35,24 @@ async function run() {
       }
     });
 
+    // --- Single skill ---
 
+    app.get("/skills/:id", async (req, res) => {
+      const { id } = req.params;
 
+      try {
+        const result = await skillCollection.findOne({ _id: new ObjectId(id) });
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Failed to fetch artwork" });
+      }
+    });
 
-
+    // --- Add skill --
 
     // POST new skill
-    app.post('/skills', async (req, res) => {
+    app.post("/skills", async (req, res) => {
       try {
         const newSkill = req.body;
         const result = await skillCollection.insertOne(newSkill);
@@ -54,14 +65,15 @@ async function run() {
 
     await client.db("admin").command({ ping: 1 });
     console.log("Connected to MongoDB successfully!");
-  } finally {}
+  } finally {
+  }
 }
 run().catch(console.dir);
 
-app.get('/', (req, res) => {
-  res.send('Hello world!')
-})
+app.get("/", (req, res) => {
+  res.send("Hello world!");
+});
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
-})
+  console.log(`Server running on port ${port}`);
+});
