@@ -75,6 +75,25 @@ async function run() {
         }
     })
 
+    // --- Update skill ---
+
+    app.post('/skills/:id' , async (req , res) =>{
+        const id = req.params;
+        const data = req.body;
+
+        try{
+            const result = await skillCollection.updateOne(
+                {_id:new ObjectId(id)},
+                {$set:data},
+            )
+            res.send(result)
+        }catch(error){
+            console.error(error);
+            res.status(500).send({error: "Failed to update artwork" })
+        }
+
+    })
+
 
 
     await client.db("admin").command({ ping: 1 });
