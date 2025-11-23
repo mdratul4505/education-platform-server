@@ -50,6 +50,17 @@ async function run() {
     });
 
     // --- Add skill --
+    app.post("/skills" , async (req , res) =>{
+        const data = req.body
+        data.create_at = new Date()
+        try{
+            const result = await skillCollection.insertOne(data);
+            res.send(result)
+        }catch(error){
+            console.log(error);
+            res.status(500).send({error: "Failed to add artwork"})
+        }
+    })
 
     // POST new skill
     app.post("/skills", async (req, res) => {
