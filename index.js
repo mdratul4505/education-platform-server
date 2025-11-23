@@ -57,22 +57,25 @@ async function run() {
             const result = await skillCollection.insertOne(data);
             res.send(result)
         }catch(error){
-            console.log(error);
+            console.error(error);
             res.status(500).send({error: "Failed to add artwork"})
         }
     })
 
-    // POST new skill
-    app.post("/skills", async (req, res) => {
-      try {
-        const newSkill = req.body;
-        const result = await skillCollection.insertOne(newSkill);
-        res.send(result);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Failed to add skill" });
-      }
-    });
+    //  my couses --------
+
+    app.get("/my-couses", async (req , res) =>{
+        const email = req.query.email;
+        try{
+            const result = await skillCollection.find({userEmail: email}).toArray();
+            res.send(result)
+        }catch(error) {
+            console.error(error)
+            res.status(500).send({ error: "Failed to load user's couses"})
+        }
+    })
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Connected to MongoDB successfully!");
