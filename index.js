@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // Middleware for body parsing
 app.use(express.json());
@@ -45,7 +45,7 @@ async function run() {
         res.send(result);
       } catch (error) {
         console.error(error);
-        res.status(500).send({ error: "Failed to fetch artwork" });
+        res.status(500).send({ error: "Failed to fetch skill" });
       }
     });
 
@@ -58,13 +58,13 @@ async function run() {
         res.send(result);
       } catch (error) {
         console.error(error);
-        res.status(500).send({ error: "Failed to add artwork" });
+        res.status(500).send({ error: "Failed to add skill" });
       }
     });
 
-    //  my couses --------
+    //  my courses --------
 
-    app.get("/my-couses", async (req, res) => {
+    app.get("/my-courses", async (req, res) => {
       const email = req.query.email;
       try {
         const result = await skillCollection
@@ -73,14 +73,14 @@ async function run() {
         res.send(result);
       } catch (error) {
         console.error(error);
-        res.status(500).send({ error: "Failed to load user's couses" });
+        res.status(500).send({ error: "Failed to load user's courses" });
       }
     });
 
     // --- Update skill ---
 
-    app.post("/skills/:id", async (req, res) => {
-      const id = req.params;
+    app.patch("/skills/:id", async (req, res) => {
+      const {id} = req.params;
       const data = req.body;
 
       try {
@@ -96,7 +96,7 @@ async function run() {
     });
 
     // letest 8 skills
-    app.get("/skills" , async (req , res ) =>{
+    app.get("/skills/latest" , async (req , res ) =>{
         try{
             const result = await skillCollection.find({})
             .sort({create_at: -1})
@@ -114,7 +114,7 @@ async function run() {
     
     
     
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Connected to MongoDB successfully!");
   } finally {
   }
@@ -128,3 +128,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
